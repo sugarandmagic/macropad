@@ -1,10 +1,3 @@
-from adafruit_macropad import MacroPad
-from adafruit_display_text import label
-from adafruit_display_shapes.rect import Rect
-import terminalio
-import displayio
-import time
-import os
 # SPDX-FileCopyrightText: 2021 Phillip Burgess for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
@@ -17,6 +10,14 @@ set, press MACROPAD keys to send key sequences and other USB protocols.
 """
 
 # pylint: disable=import-error, unused-import, too-few-public-methods
+
+import os
+import time
+import displayio
+import terminalio
+from adafruit_display_shapes.rect import Rect
+from adafruit_display_text import label
+from adafruit_macropad import MacroPad
 
 
 # CONFIGURABLES ------------------------
@@ -59,6 +60,7 @@ class App:
 macropad = MacroPad()
 macropad.display.auto_refresh = False
 macropad.pixels.auto_write = False
+macropad.pixels.brightness = 0.5
 
 # Set up displayio group with all the labels
 group = displayio.Group()
@@ -81,7 +83,7 @@ apps = []
 files = os.listdir(MACRO_FOLDER)
 files.sort()
 for filename in files:
-    if filename.endswith('.py'):
+    if filename.endswith('.py') and not filename.startswith('._'):
         try:
             module = __import__(MACRO_FOLDER + '/' + filename[:-3])
             apps.append(App(module.app))
@@ -145,8 +147,7 @@ while True:
         # List []: one or more Consumer Control codes (can also do float delay)
         # Dict {}: mouse buttons/motion (might extend in future)
         if key_number < 12:  # No pixel for encoder button
-            macropad.pixels[key_number] = 0xf0605cgit add .
-            
+            macropad.pixels[key_number] = 0xFFFFFF
             macropad.pixels.show()
         for item in sequence:
             if isinstance(item, int):
